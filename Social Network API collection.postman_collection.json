@@ -72,6 +72,16 @@
 		{
 			"name": "get user by id",
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzQ4NTI0NDE0fQ.jt1xdvTCtr2yROKAbaZt6Sqd9GU9suYU_YlXb5fT4bk",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
