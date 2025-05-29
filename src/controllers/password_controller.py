@@ -1,13 +1,16 @@
 import logging
 from datetime import timedelta, datetime, timezone
 
-from fastapi import Depends
-from jose import jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+
+from jose import jwt, JWTError
 from passlib.context import CryptContext
 
 from src.core.db_connector import get_db
 
 logger = logging.getLogger(__name__)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 class AccessHandler:
     def __init__(
@@ -58,10 +61,21 @@ class AccessHandler:
         encoded_jwt = jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
         return encoded_jwt
 
-
-# access_object: AccessHandler | None = None
+    # метод для проверки токена (авторизовался ли юзер)
+    def get_current_user(self, token: str = Depends(oauth2_scheme)):
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+        )
+        try:
+            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+            user_id: str = payload.get("sub")
+            if user_id is None:
+                raise credentials_exception
+            return user_id
+        except JWTError:
+            raise credentials_exception
 
 
 def get_access_handler() -> AccessHandler:
-    # assert access_object is not None, "Access_object not initialized"
     return AccessHandler()

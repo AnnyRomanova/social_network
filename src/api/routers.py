@@ -11,6 +11,7 @@ from src.controllers.password_controller import AccessHandler, get_access_handle
 router = APIRouter()
 app = FastAPI()
 app.include_router(router)
+access_handler = AccessHandler()
 
 @router.post("/user/register", status_code=201, response_model=UserOUT)
 async def register_user(user_data: UserCreate, access_object: AccessHandler = Depends(get_access_handler), db = Depends(get_db)) -> UserOUT:
@@ -41,7 +42,7 @@ async def register_user(user_data: UserCreate, access_object: AccessHandler = De
 
 
 @router.get("/user/get/{user_id}", response_model=UserOUT)
-async def get_user_profile(user_id: int, db=Depends(get_db)) -> UserOUT:
+async def get_user_profile(user_id: int, db=Depends(get_db), current_user: str = Depends(access_handler.get_current_user)) -> UserOUT:
     with db.cursor() as cursor:
         cursor.execute("SELECT id, first_name, last_name, birth_date, gender, interests, city FROM users WHERE id = %s", (user_id,))
         row = cursor.fetchone()
