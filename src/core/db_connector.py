@@ -1,5 +1,5 @@
 import logging
-
+from fastapi import Request
 from pydantic_settings import BaseSettings
 
 import psycopg2
@@ -14,6 +14,7 @@ class DatabaseConfig(BaseSettings):
     DB: str
 
     def make_connection(self):
+        logger.debug(f"Connecting with: host={self.HOST}, port={self.PORT}, user={self.USER}, db={self.DB}")
         connection = psycopg2.connect(
             host=self.HOST,
             user=self.USER,
@@ -31,10 +32,7 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-def get_db():
+def get_db(request: Request):
     logger.info("Connection to DataBase")
-    connection = settings.DB.make_connection()
-    try:
-        yield connection
-    finally:
-        connection.close()
+    connection = request.app.state.db_connection
+    yield connection

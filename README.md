@@ -18,7 +18,7 @@
 
 `DB__HOST=db`
 
-`DB__PORT=5432`
+`DB__PORT=5433`
 
 `DB__USER=postgres`
 
@@ -35,7 +35,7 @@
 
 ## 4. Инициализация базы данных
 #### Для создания таблиц выполните команду в терминале (psql должен быть установлен локально):
-```psql -h localhost -p 5431 -U postgres -d social_network_db -f create_tables.sql```
+```psql -h localhost -p 5433 -U postgres -d social_network_db -f create_tables.sql```
 ### Затем ввести пароль от postgres
 
 ## 5. Использование Postman-коллекции
