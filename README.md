@@ -38,5 +38,9 @@
 ```psql -h localhost -p 5433 -U postgres -d social_network_db -f create_tables.sql```
 ### Затем ввести пароль от postgres
 
+## 5. Заполнение базы данных
+#### Исполнить файл "create_csv_users.py"
+#### Исполнить файл "add_users_to_db.py"
+
 ## 5. Использование Postman-коллекции
 #### Импортируйте коллекцию в Postman, выберите нужный запрос и нажмите "Send".

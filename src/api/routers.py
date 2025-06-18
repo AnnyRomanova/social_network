@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from fastapi import HTTPException
 
-from fastapi import Depends, APIRouter, FastAPI
+from fastapi import Depends, APIRouter, FastAPI, Query
 
 from src.schemas.models import UserCreate, UserOUT, UserLogin, Token
 from src.core.db_connector import get_db
@@ -67,3 +67,26 @@ async def login(login_data: UserLogin, access_object: AccessHandler = Depends(ge
         expires_delta=timedelta(minutes=access_object.access_token_expire_minutes)
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.get("/user/search", response_model=list[UserOUT])
+async def search_users(firstName: str = Query(...), lastName: str = Query(...), db=Depends(get_db)):
+    first_name_pattern = f"{firstName}%"
+    last_name_pattern = f"{lastName}%"
+    with db.cursor() as cursor:
+        cursor.execute("SELECT id, first_name, last_name, birth_date, gender, interests, city FROM users WHERE first_name LIKE %s AND last_name LIKE %s ORDER BY id ASC;",
+                       (first_name_pattern, last_name_pattern))
+        rows = cursor.fetchall()
+        users_list = []
+        for row in rows:
+            users_list.append(
+                UserOUT(
+                    id=row[0],
+                    first_name=row[1],
+                    last_name=row[2],
+                    birth_date=row[3],
+                    gender=row[4],
+                    interests=row[5],
+                    city=row[6])
+            )
+    return users_list
